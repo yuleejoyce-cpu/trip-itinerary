@@ -243,6 +243,7 @@
     transform: rotate(-.3deg);
   }
   .note-line { font-size: 15px; color: var(--ink); line-height: 1.7; font-weight: 500; }
+  .note-line a { color: var(--accent-dark); text-decoration: underline; }
   .note-line + .note-line { margin-top: 6px; }
   .note-who {
     display: inline-block;
@@ -476,7 +477,7 @@ function renderDetail() {
           ? `<div class="note-sheet">
               ${notes.map(n => `
                 <div class="note-line" style="--who-color:${getUserColor(n.user)}">
-                  <span class="note-who">${n.user || '匿名'}</span>${n.message}
+                  ${n.user ? `<span class="note-who">${n.user}</span>` : ''}${n.message}
                 </div>`).join('')}
             </div>`
           : `<div class="note-empty">還沒有備註/說明，第一個留言給大家看看吧 👋</div>`
