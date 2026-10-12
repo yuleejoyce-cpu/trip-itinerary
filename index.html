@@ -467,7 +467,7 @@ function renderDetail() {
           ${notes.length
             ? notes.map(n => `
               <div class="note-item">
-                <div class="meta"><span class="who">${n.user}</span><span>${n.timestamp || ''}</span></div>
+                <div class="meta"><span class="who">${n.user}</span></div>
                 <div class="msg">${escapeHtml(n.message)}</div>
               </div>`).join('')
             : `<div class="note-empty">還沒有備註/說明，第一個留言給大家看看吧 👋</div>`
