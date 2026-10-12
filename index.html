@@ -209,7 +209,7 @@
     padding: 3px 10px; margin-top: 9px;
   }
 
-  .note-toggle {
+  .note-header {
     display: flex; align-items: center; gap: 6px;
     width: calc(100% - 20px); margin: 0 10px 10px;
     background: var(--peach);
@@ -219,11 +219,8 @@
     font-size: 14px;
     color: var(--ink);
     font-weight: 700;
-    cursor: pointer;
-    box-shadow: 2px 2px 0 rgba(107,84,64,.15);
   }
-  .note-toggle:active { transform: translateY(1px); box-shadow: 1px 1px 0 rgba(107,84,64,.15); }
-  .note-toggle .count {
+  .note-header .count {
     background: var(--accent-dark);
     color: #fff;
     border-radius: 999px;
@@ -231,32 +228,38 @@
     padding: 1px 7px;
     font-weight: 700;
   }
-  .note-toggle .chev { margin-left: auto; transition: transform .2s; }
-  .day-card.open .note-toggle .chev { transform: rotate(180deg); }
 
   .note-panel {
-    display: none;
     padding: 0 10px 12px;
   }
-  .day-card.open .note-panel { display: block; }
 
-  .note-item {
-    background: var(--butter);
-    border: 2px solid var(--ink);
-    border-radius: 12px;
-    padding: 9px 12px;
-    margin-bottom: 9px;
-    transform: rotate(-.6deg);
+  .note-sheet {
+    position: relative;
+    background: var(--panel);
+    border: 2px dashed var(--panel-line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    transform: rotate(-.3deg);
   }
-  .note-item:nth-child(even) { background: var(--mint); transform: rotate(.6deg); }
-  .note-item .meta { font-size: 13px; color: var(--ink-soft); margin-bottom: 3px; display: flex; justify-content: space-between; gap: 8px; font-weight: 700; }
-  .note-item .meta .who { color: var(--accent-dark); }
-  .note-item .msg { font-size: 15px; color: var(--ink); line-height: 1.5; font-weight: 500; }
+  .note-line { font-size: 15px; color: var(--ink); line-height: 1.7; font-weight: 500; }
+  .note-line + .note-line { margin-top: 6px; }
+  .note-who {
+    display: inline-block;
+    font-weight: 800;
+    color: #2a2a2a;
+    border: 1.5px dashed var(--who-color, var(--ink-soft));
+    background: color-mix(in srgb, var(--who-color, var(--ink-soft)) 14%, transparent);
+    border-radius: 999px;
+    padding: 1px 9px;
+    margin-right: 6px;
+    font-size: 13px;
+  }
   .note-empty { font-size: 14px; color: var(--ink-soft); text-align: center; padding: 8px 0 14px; font-weight: 600; }
 
   .note-form { display: flex; gap: 6px; margin-top: 6px; }
   .note-form select {
-    flex: 0 0 68px;
+    flex: 0 0 104px;
     font-size: 14px; font-weight: 700;
     border: 2px solid var(--ink);
     border-radius: 10px;
@@ -419,7 +422,6 @@ function jumpToDay(key) {
   const idx = itinerary.findIndex(it => it.key === key);
   if (idx === -1) return;
   selectedIndex = idx;
-  noteOpen = false;
   renderDetail();
   document.getElementById('dayDetail').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -429,11 +431,19 @@ renderCalendar();
 document.getElementById('lastUpdatedText').textContent = '行程最後更新：' + LAST_UPDATED;
 
 const webAppUrl = 'https://script.google.com/macros/s/AKfycbzX0ZtriCa4xuMtXBtwKTJTHRfR3Hvr8-9e9pDYykRD0Fc63ZK5JPDTXK5qP7X-qCWn/exec';
-const users = ['Joyce', 'Julian', '410'];
-let currentUser = localStorage.getItem('currentUser') || users[0];
+const users = ['', 'Joyce', 'Julian', '410', '👭'];
+const userLabels = { '👭': '👭' };
+const userColors = {
+  'Joyce': '#e3b24f',
+  'Julian': '#7fc3a3',
+  '410': '#b19be0',
+  '👭': '#e8a3b4',
+};
+function getUserColor(name) { return userColors[name] || '#a6927c'; }
+
+let currentUser = localStorage.getItem('currentUser') || '';
 let allNotes = [];
 let selectedIndex = 0;
-let noteOpen = false;
 
 function renderDetail() {
   const item = itinerary[selectedIndex];
@@ -445,7 +455,7 @@ function renderDetail() {
   document.getElementById('nextBtn').disabled = selectedIndex === itinerary.length - 1;
 
   const html = `
-    <div class="day-card ${noteOpen ? 'open' : ''}" id="card-${item.key}">
+    <div class="day-card" id="card-${item.key}">
       <div class="day-tape"></div>
       <div class="day-main">
         <div class="day-date-col">
@@ -458,24 +468,22 @@ function renderDetail() {
           <span class="day-stay">${item.stayIcon || '🏨'} ${item.stay}</span>
         </div>
       </div>
-      <button class="note-toggle" onclick="toggleNotes()">
+      <div class="note-header">
         💬 備註/說明${notes.length ? `<span class="count">${notes.length}</span>` : ''}
-        <span class="chev">▾</span>
-      </button>
+      </div>
       <div class="note-panel">
-        <div class="note-list">
-          ${notes.length
-            ? notes.map(n => `
-              <div class="note-item">
-                <div class="meta"><span class="who">${n.user}</span></div>
-                <div class="msg">${n.message}</div>
-              </div>`).join('')
-            : `<div class="note-empty">還沒有備註/說明，第一個留言給大家看看吧 👋</div>`
-          }
-        </div>
+        ${notes.length
+          ? `<div class="note-sheet">
+              ${notes.map(n => `
+                <div class="note-line" style="--who-color:${getUserColor(n.user)}">
+                  <span class="note-who">${n.user || '匿名'}</span>${n.message}
+                </div>`).join('')}
+            </div>`
+          : `<div class="note-empty">還沒有備註/說明，第一個留言給大家看看吧 👋</div>`
+        }
         <div class="note-form">
           <select id="userSel-${item.key}">
-            ${users.map(u => `<option value="${u}" ${u === currentUser ? 'selected' : ''}>${u}</option>`).join('')}
+            ${users.map(u => `<option value="${u}" ${u === currentUser ? 'selected' : ''}>${userLabels[u] || u}</option>`).join('')}
           </select>
           <input type="text" id="noteInput-${item.key}" placeholder="寫點備註/說明...">
           <button onclick="addNote('${item.key}', '${item.date}')">送出</button>
@@ -491,16 +499,10 @@ function escapeHtml(str) {
   return d.innerHTML;
 }
 
-function toggleNotes() {
-  noteOpen = !noteOpen;
-  renderDetail();
-}
-
 function shiftDay(delta) {
   const next = selectedIndex + delta;
   if (next < 0 || next >= itinerary.length) return;
   selectedIndex = next;
-  noteOpen = false;
   renderDetail();
 }
 
@@ -529,7 +531,6 @@ function addNote(key, date) {
     if (data.success) {
       input.value = '';
       showToast('✅ 留言已送出');
-      noteOpen = true;
       loadNotes();
     } else {
       showToast('❌ 送出失敗：' + (data.error || '未知錯誤'), true);
