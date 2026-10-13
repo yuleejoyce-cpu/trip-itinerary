@@ -30,6 +30,7 @@
   }
   body {
     font-family: 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, 'Noto Sans CJK TC', sans-serif;
+    overflow-x: hidden;
     background-color: var(--bg);
     background-image:
       radial-gradient(circle, rgba(107,84,64,.08) 1px, transparent 1.4px);
@@ -45,15 +46,15 @@
 
   /* ===== Header ===== */
   .header { text-align: center; position: relative; margin-bottom: 20px; }
-  .doodle { position: absolute; top: -14px; font-size: 48px; }
+  .doodle { position: absolute; top: -14px; font-size: clamp(28px, 7vw, 48px); }
   .doodle.left { left: 4px; transform: rotate(-12deg); }
   .doodle.right { right: 4px; transform: rotate(12deg); }
   .header h1 {
-    font-size: 34px; font-weight: 900; color: var(--accent-dark);
+    font-size: clamp(22px, 6vw, 34px); font-weight: 900; color: var(--accent-dark);
     letter-spacing: .5px; padding-top: 10px;
   }
   .header p {
-    font-size: 19px; color: var(--ink-soft); margin-top: 5px;
+    font-size: clamp(13px, 3.3vw, 19px); color: var(--ink-soft); margin-top: 5px;
     font-family: 'Baloo 2', sans-serif; font-weight: 600;
   }
 
@@ -62,7 +63,7 @@
     background: var(--panel);
     border: 2px dashed var(--panel-line);
     color: var(--ink-soft);
-    font-size: 18px;
+    font-size: clamp(12px, 3vw, 18px);
     border-radius: 999px;
     padding: 6px 16px;
     width: fit-content;
@@ -77,7 +78,7 @@
     border: 2.5px solid var(--ink);
     border-radius: 26px 30px 22px 28px / 24px 20px 28px 22px;
     box-shadow: 4px 5px 0 rgba(107,84,64,.15);
-    padding: 20px 14px 14px;
+    padding: clamp(14px, 4vw, 20px) clamp(6px, 2.5vw, 14px) 14px;
     margin-bottom: 22px;
     transform: rotate(-.3deg);
   }
@@ -91,51 +92,51 @@
   }
   .cal-weekdays, .cal-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: clamp(3px, 1.2vw, 8px);
   }
   .cal-weekdays { margin-bottom: 7px; }
   .cal-weekdays span {
     text-align: center;
-    font-size: 17px;
+    font-size: clamp(12px, 3.3vw, 17px);
     font-weight: 700;
     color: var(--ink-soft);
     display: flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px; margin: 0 auto;
+    width: clamp(22px, 6.5vw, 34px); height: clamp(22px, 6.5vw, 34px); margin: 0 auto;
     border-radius: 50%;
   }
   .cal-weekdays span.weekend { background: var(--pink); color: var(--accent-dark); }
-  .cal-grid { margin-bottom: 14px; gap: 8px; }
+  .cal-grid { margin-bottom: 14px; }
   .cal-cell {
     aspect-ratio: 1 / 1.2;
-    border-radius: 16px;
+    border-radius: clamp(10px, 2.8vw, 16px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: clamp(1px, .5vw, 3px);
     font-family: 'Baloo 2', sans-serif;
     position: relative;
   }
   .cal-cell.empty { visibility: hidden; }
   .cal-cell.pad { background: rgba(107,84,64,.04); color: var(--ink-soft); opacity: .55; }
-  .cal-cell.pad .num { font-size: 17px; font-weight: 700; }
+  .cal-cell.pad .num { font-size: clamp(11px, 3vw, 17px); font-weight: 700; }
   .cal-cell.transit {
     background: var(--panel);
     border: 2px dashed var(--panel-line);
   }
-  .cal-cell.transit .icon { font-size: 29px; }
-  .cal-cell.transit .num { font-size: 15px; font-weight: 700; color: var(--ink-soft); }
-  .cal-cell.transit .tag { font-size: 12px; }
+  .cal-cell.transit .icon { font-size: clamp(16px, 4.6vw, 29px); }
+  .cal-cell.transit .num { font-size: clamp(10px, 2.6vw, 15px); font-weight: 700; color: var(--ink-soft); }
+  .cal-cell.transit .tag { font-size: clamp(8px, 2.1vw, 12px); }
   .cal-cell.trip {
     border: 2px solid var(--ink);
     box-shadow: 1.5px 2px 0 rgba(107,84,64,.18);
   }
   .cal-cell.trip[onclick] { cursor: pointer; }
   .cal-cell.trip:active { transform: translateY(1px); box-shadow: 1px 1px 0 rgba(107,84,64,.18); }
-  .cal-cell .icon { font-size: 27px; line-height: 1; }
-  .cal-cell .num { font-size: 19px; font-weight: 700; color: var(--ink); line-height: 1.1; }
-  .cal-cell .tag { font-size: 13px; font-weight: 700; color: var(--ink); opacity: .85; white-space: nowrap; }
+  .cal-cell .icon { font-size: clamp(16px, 4.3vw, 27px); line-height: 1; }
+  .cal-cell .num { font-size: clamp(11px, 3.2vw, 19px); font-weight: 700; color: var(--ink); line-height: 1.1; }
+  .cal-cell .tag { font-size: clamp(8px, 2.1vw, 13px); font-weight: 700; color: var(--ink); opacity: .85; white-space: normal; line-height: 1.15; padding: 0 2px; word-break: break-word; }
 
   .cal-legend {
     display: flex; flex-wrap: wrap; gap: 10px;
@@ -155,24 +156,25 @@
     margin-bottom: 14px;
   }
   .nav-btn {
-    width: 26px; height: 26px; border-radius: 50%;
+    width: clamp(24px, 6vw, 26px); height: clamp(24px, 6vw, 26px); border-radius: 50%;
     border: 2px solid var(--ink);
     background: var(--panel);
-    color: var(--ink); font-size: 19px; font-weight: 700; line-height: 1;
+    color: var(--ink); font-size: clamp(16px, 4vw, 19px); font-weight: 700; line-height: 1;
     cursor: pointer;
+    flex: none;
     box-shadow: 2px 2px 0 rgba(107,84,64,.15);
   }
   .nav-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 1px 1px 0 rgba(107,84,64,.15); }
   .nav-btn:disabled { opacity: .3; cursor: default; }
   .nav-label {
     color: var(--ink);
-    font-size: 16px; font-weight: 700;
+    font-size: clamp(13px, 3.5vw, 16px); font-weight: 700;
     font-family: 'Baloo 2', sans-serif;
     background: var(--butter);
     border: 2px solid var(--ink);
     border-radius: 999px;
-    padding: 5px 16px;
-    min-width: 108px; text-align: center;
+    padding: 5px clamp(10px, 3vw, 16px);
+    min-width: 90px; text-align: center;
     box-shadow: 2px 2px 0 rgba(107,84,64,.12);
   }
 
@@ -193,17 +195,17 @@
     opacity: .85; border-radius: 2px;
     box-shadow: 0 2px 3px rgba(0,0,0,.08);
   }
-  .day-main { display: flex; gap: 10px; padding: 14px 13px 10px; }
-  .day-date-col { flex: 0 0 44px; text-align: center; }
-  .day-date-col .icon { font-size: 29px; display: block; margin-bottom: 2px; }
-  .day-date-col .md { font-family: 'Baloo 2', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent-dark); line-height: 1.1; }
-  .day-date-col .wd { font-size: 13px; color: var(--ink-soft); margin-top: 2px; font-weight: 700; }
+  .day-main { display: flex; gap: clamp(6px, 2.5vw, 10px); padding: clamp(10px, 3.5vw, 14px) clamp(8px, 3vw, 13px) 10px; }
+  .day-date-col { flex: 0 0 clamp(36px, 10vw, 44px); text-align: center; }
+  .day-date-col .icon { font-size: clamp(20px, 6vw, 29px); display: block; margin-bottom: 2px; }
+  .day-date-col .md { font-family: 'Baloo 2', sans-serif; font-size: clamp(14px, 4.5vw, 20px); font-weight: 800; color: var(--accent-dark); line-height: 1.1; }
+  .day-date-col .wd { font-size: clamp(10px, 2.8vw, 13px); color: var(--ink-soft); margin-top: 2px; font-weight: 700; }
 
   .day-body { flex: 1; min-width: 0; }
-  .day-activity { font-size: 16px; line-height: 1.75; color: var(--ink); white-space: pre-line; font-weight: 500; }
+  .day-activity { font-size: clamp(13px, 3.5vw, 16px); line-height: 1.75; color: var(--ink); white-space: pre-line; font-weight: 500; }
   .day-stay {
     display: inline-flex; align-items: center; gap: 5px;
-    font-size: 13px; font-weight: 700; color: var(--ink);
+    font-size: clamp(11px, 2.8vw, 13px); font-weight: 700; color: var(--ink);
     background: var(--lavender); border: 1.5px solid var(--ink);
     border-radius: 999px;
     padding: 3px 10px; margin-top: 9px;
@@ -258,10 +260,11 @@
   }
   .note-empty { font-size: 14px; color: var(--ink-soft); text-align: center; padding: 8px 0 14px; font-weight: 600; }
 
-  .note-form { display: flex; gap: 6px; margin-top: 6px; }
+  .note-form { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
   .note-form select {
-    flex: 0 0 104px;
-    font-size: 14px; font-weight: 700;
+    flex: 0 0 clamp(76px, 22vw, 104px);
+    min-width: 0;
+    font-size: clamp(12px, 3.2vw, 14px); font-weight: 700;
     border: 2px solid var(--ink);
     border-radius: 10px;
     padding: 0 4px;
@@ -270,8 +273,9 @@
     font-family: inherit;
   }
   .note-form input[type="text"] {
-    flex: 1;
-    font-size: 15px;
+    flex: 1 1 120px;
+    min-width: 0;
+    font-size: clamp(13px, 3.5vw, 15px);
     border: none;
     border-bottom: 2px dashed var(--panel-line);
     padding: 8px 4px;
