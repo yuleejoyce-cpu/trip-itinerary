@@ -436,12 +436,13 @@ renderCalendar();
 document.getElementById('lastUpdatedText').textContent = '行程最後更新：' + LAST_UPDATED;
 
 const webAppUrl = 'https://script.google.com/macros/s/AKfycbzX0ZtriCa4xuMtXBtwKTJTHRfR3Hvr8-9e9pDYykRD0Fc63ZK5JPDTXK5qP7X-qCWn/exec';
-const users = ['', 'Joyce', 'Julian', '410', '👭'];
+const users = ['', 'Joyce', 'Julian', '410', 'Grace', '👭'];
 const userLabels = { '👭': '👭' };
 const userColors = {
   'Joyce': '#e3b24f',
   'Julian': '#7fc3a3',
   '410': '#b19be0',
+  'Grace': '#4ea8c9',
   '👭': '#e8a3b4',
 };
 function getUserColor(name) { return userColors[name] || '#a6927c'; }
