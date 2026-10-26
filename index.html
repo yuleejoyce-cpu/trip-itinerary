@@ -203,6 +203,7 @@
 
   .day-body { flex: 1; min-width: 0; }
   .day-activity { font-size: clamp(13px, 3.5vw, 16px); line-height: 1.75; color: var(--ink); white-space: pre-line; font-weight: 500; }
+  .day-activity a { color: var(--accent-dark); text-decoration: underline; font-weight: 700; }
   .day-stay {
     display: inline-flex; align-items: center; gap: 5px;
     font-size: clamp(11px, 2.8vw, 13px); font-weight: 700; color: var(--ink);
@@ -341,22 +342,22 @@
 
 <script>
 // ===== 行程資料：每次改行程記得更新下面的 LAST_UPDATED =====
-const LAST_UPDATED = '2026/10/13';
+const LAST_UPDATED = '2026/10/24';
 
 const itinerary = [
   { key: '11-25', date: '11/25', day: '二', activity: '', stay: '台灣', stayIcon: '📍' },
-  { key: '11-26', date: '11/26', day: '三', activity: '✈️ 紐約到達 (TPE→JFK)', stay: '大姐家' },
-  { key: '11-27', date: '11/27', day: '四', activity: '🗽 紐約自由行', stay: '大姐家' },
-  { key: '11-28', date: '11/28', day: '五', activity: '✈️ 卡加利 (EWR→YYC)', stay: 'Delta Hotels' },
-  { key: '11-29', date: '11/29', day: '六', activity: '🏔️ GetYourGuide 班夫一日遊', stay: 'Delta Hotels' },
-  { key: '11-30', date: '11/30', day: '日', activity: '✈️ 抵達黃刀鎮 (YYC→YZF)\n🌌 晚上10:00PM極光之旅', stay: 'Chateau Nova 湖畔木屋' },
-  { key: '12-01', date: '12/01', day: '一', activity: '🏙️ 黃刀鎮市區遊（龍彩）\n🐟 網紅魚餐廳 Bullocks Bistro（享用新鮮北極鱈魚或原住民傳統餐）\n🌌 追獵極光', stay: 'Chateau Nova' },
-  { key: '12-02', date: '12/02', day: '二', activity: '🎣 冰凍大奴湖捕魚體驗\n🐕 狗拉雪橇\n🌌 極光圈區追獵極光', stay: 'Chateau Nova' },
-  { key: '12-03', date: '12/03', day: '三', activity: '✈️ 搭機返回紐約 (YZF→EWR)', stay: '大姐家' },
-  { key: '12-04', date: '12/04', day: '四', activity: '🏙️ 紐約休整', stay: '大姐家' },
-  { key: '12-05', date: '12/05', day: '五', activity: '🎒 準備行李', stay: '大姐家' },
-  { key: '12-06', date: '12/06', day: '六', activity: '✈️ 返台 (JFK→TPE)', stay: '機上' },
-  { key: '12-08', date: '12/08', day: '一', activity: '🏠 抵達台北', stay: '-' },
+  { key: '11-26', date: '11/26', day: '三', activity: '🛬 抵達紐約 (TPE→JFK)', stay: '大姐家' },
+  { key: '11-27', date: '11/27', day: '四', activity: '🏙️ 市區觀光', stay: '大姐家' },
+  { key: '11-28', date: '11/28', day: '五', activity: '🏔️ 卡加利 (EWR→YYC)', stay: 'Delta Hotels' },
+  { key: '11-29', date: '11/29', day: '六', activity: '🚌 <a href="https://www.getyourguide.com/banff-l284/lake-louise-emerald-moraine-canyon-hike-bridge-yoho-to-t1074469/" target="_blank" rel="noopener">Lake Louise, Emerald, Moraine, Canyon hike, Bridge & Yoho tour</a>\n⏰ 08:00-19:00\n\n行程內容：\n・Cascade Mountain（途經）\n・Castle Mountain（拍照停留）\n・Lake Louise（導覽行程）\n・Emerald Lake\n・Natural bridge\n・Marble canyon\n・Banff town\n\n🍴 午餐：Lake Louise Village North', stay: 'Delta Hotels' },
+  { key: '11-30', date: '11/30', day: '日', activity: '🛬 抵達黃刀鎮 (YYC→YZF)\n🌌 22:00 <a href="https://sites.google.com/view/dragonpalacetravel/%E8%A1%8C%E7%A8%8B%E8%88%87%E6%B4%BB%E5%8B%95tour-package-activities/%E5%86%AC%E9%BE%8D%E5%BD%A9%E9%BB%83%E5%88%80%E6%A5%B5%E5%85%894%E6%97%A5?pli=1&amp;authuser=0" target="_blank" rel="noopener">極光之旅-湖畔木屋營地</a>', stay: 'Chateau Nova' },
+  { key: '12-01', date: '12/01', day: '一', activity: '🏙️ 13:30 黃刀鎮市區觀光 (約 2.5 小時)\n🍽️ 網紅魚餐廳 Bullocks Bistro or 原住民酒吧（自費晚餐option）\n🌌 22:00 追獵極光', stay: 'Chateau Nova' },
+  { key: '12-02', date: '12/02', day: '二', activity: '🐟 10:30 冰凍大奴湖捕魚體驗+午餐\n🐕 13:00 狗拉雪橇\n🌌 22:00 極光圈區追獵極光', stay: 'Chateau Nova' },
+  { key: '12-03', date: '12/03', day: '三', activity: '🛬 搭機返回紐約 (YZF→EWR)', stay: '大姐家' },
+  { key: '12-04', date: '12/04', day: '四', activity: '🏙️ 市區觀光', stay: '大姐家' },
+  { key: '12-05', date: '12/05', day: '五', activity: '🏙️ 市區觀光\n🎒 準備行李', stay: '大姐家' },
+  { key: '12-06', date: '12/06', day: '六', activity: '🏰 Oheka Castle\n🇹🇼 紅眼班機返台', stay: '紐約/台灣', stayIcon: '📍' },
+  { key: '12-08', date: '12/08', day: '一', activity: '', stay: '台灣', stayIcon: '📍' },
 ];
 
 // ===== 迷你月曆：城市分段上色 + 自訂標籤 =====
@@ -369,19 +370,19 @@ const citySegments = {
 };
 
 const dayMeta = {
-  '11/25': { seg: 'flight', icon: '✈️', tag: '飛行' },
-  '11/26': { seg: 'flight', icon: '🛬', tag: '抵達紐約' },
+  '11/25': { seg: 'flight', icon: '✈️', tag: '台灣/出發!' },
+  '11/26': { seg: 'flight', icon: '✈️', tag: '紐約' },
   '11/27': { seg: 'ny',     icon: '🗽', tag: '紐約' },
   '11/28': { seg: 'banff',  icon: '✈️', tag: '卡加利' },
   '11/29': { seg: 'banff',  icon: '🏔️', tag: '卡加利/班夫' },
-  '11/30': { seg: 'yzf',    icon: '🌌', tag: '黃刀鎮' },
-  '12/01': { seg: 'yzf',    icon: '🐕', tag: '黃刀鎮' },
+  '11/30': { seg: 'yzf',    icon: '❄️', tag: '黃刀鎮' },
+  '12/01': { seg: 'yzf',    icon: '⛄', tag: '黃刀鎮' },
   '12/02': { seg: 'yzf',    icon: '🎣', tag: '黃刀鎮' },
   '12/03': { seg: 'ny',     icon: '✈️', tag: '紐約' },
-  '12/04': { seg: 'ny',     icon: '🗽', tag: '紐約' },
-  '12/05': { seg: 'ny',     icon: '🎒', tag: '紐約' },
-  '12/06': { seg: 'home',   icon: '✈️', tag: '返台' },
-  '12/08': { seg: 'home',   icon: '🏠', tag: '抵台' },
+  '12/04': { seg: 'ny',     icon: '🏢', tag: '紐約' },
+  '12/05': { seg: 'ny',     icon: '🌉', tag: '紐約' },
+  '12/06': { seg: 'home',   icon: '✈️', tag: '紐約/回家~' },
+  '12/08': { seg: 'home',   icon: '✈️', tag: '台灣' },
 };
 
 // 3 週（7 欄）排版，含行程前後的留白日期；12/07 為換日線，無獨立行程卡
@@ -471,7 +472,7 @@ function renderDetail() {
         </div>
         <div class="day-body">
           <div class="day-activity">${item.activity}</div>
-          <span class="day-stay">${item.stayIcon || '🏨'} ${item.stay}</span>
+          ${item.stay ? `<span class="day-stay">${item.stayIcon || '🏨'} ${item.stay}</span>` : ''}
         </div>
       </div>
       <div class="note-header">
