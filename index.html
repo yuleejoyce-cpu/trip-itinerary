@@ -309,7 +309,21 @@
   }
   .toast.error { background: var(--peach-dark); }
   @keyframes fadeUp { from { opacity: 0; transform: translate(-50%, 8px);} to { opacity: 1; transform: translate(-50%, 0);} }
+
+  /* ===== 紐約小地圖 ===== */
+  .map-card { background: var(--panel); border: 2.5px solid var(--panel-line); border-radius: 18px; padding: 14px 12px 12px; margin-top: 18px; box-shadow: 3px 3px 0 rgba(107,84,64,.12); }
+  .map-card h2 { font-size: clamp(16px, 4.4vw, 20px); font-weight: 900; color: var(--accent-dark); margin-bottom: 8px; }
+  .map-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .map-chip { border: 2px solid var(--panel-line); background: #fff; color: var(--ink); font-family: inherit; font-weight: 700; font-size: 13px; padding: 4px 11px; border-radius: 999px; cursor: pointer; }
+  .map-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #nyMap { height: 340px; border-radius: 12px; border: 2px solid var(--panel-line); background: #efe6d6; z-index: 0; }
+  .map-list { margin-top: 8px; font-size: 13px; line-height: 1.7; color: var(--ink); }
+  .map-list b { color: var(--accent-dark); }
+  .map-note { margin-top: 6px; font-size: 11.5px; color: var(--ink-soft); }
+  .pin { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); font-family: 'Baloo 2', sans-serif; }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -338,26 +352,34 @@
   </div>
 
   <div id="dayDetail"></div>
+
+  <div class="map-card">
+    <h2>🗺️ 紐約景點小地圖</h2>
+    <div class="map-chips" id="mapChips"></div>
+    <div id="nyMap"></div>
+    <div class="map-list" id="mapList"></div>
+    <div class="map-note">點標記可開 Google 地圖導航；座標為概略位置，自由女神遊船碼頭以票券為準。</div>
+  </div>
 </div>
 
 <script>
 // ===== 行程資料：每次改行程記得更新下面的 LAST_UPDATED =====
-const LAST_UPDATED = '2026/10/24';
+const LAST_UPDATED = '2026/11/13';
 
 const itinerary = [
-  { key: '11-25', date: '11/25', day: '二', activity: '', stay: '台灣', stayIcon: '📍' },
-  { key: '11-26', date: '11/26', day: '三', activity: '🛬 抵達紐約 (TPE→JFK)', stay: '大姐家' },
-  { key: '11-27', date: '11/27', day: '四', activity: '🏙️ 市區觀光', stay: '大姐家' },
-  { key: '11-28', date: '11/28', day: '五', activity: '🏔️ 卡加利 (EWR→YYC)', stay: 'Delta Hotels' },
-  { key: '11-29', date: '11/29', day: '六', activity: '🚌 <a href="https://www.getyourguide.com/banff-l284/lake-louise-emerald-moraine-canyon-hike-bridge-yoho-to-t1074469/" target="_blank" rel="noopener">Lake Louise, Emerald, Moraine, Canyon hike, Bridge & Yoho tour</a>\n⏰ 08:00-19:00\n\n行程內容：\n・Cascade Mountain（途經）\n・Castle Mountain（拍照停留）\n・Lake Louise（導覽行程）\n・Emerald Lake\n・Natural bridge\n・Marble canyon\n・Banff town\n\n🍴 午餐：Lake Louise Village North', stay: 'Delta Hotels' },
-  { key: '11-30', date: '11/30', day: '日', activity: '🛬 抵達黃刀鎮 (YYC→YZF)\n🌌 22:00 <a href="https://sites.google.com/view/dragonpalacetravel/%E8%A1%8C%E7%A8%8B%E8%88%87%E6%B4%BB%E5%8B%95tour-package-activities/%E5%86%AC%E9%BE%8D%E5%BD%A9%E9%BB%83%E5%88%80%E6%A5%B5%E5%85%894%E6%97%A5?pli=1&amp;authuser=0" target="_blank" rel="noopener">極光之旅-湖畔木屋營地</a>', stay: 'Chateau Nova' },
-  { key: '12-01', date: '12/01', day: '一', activity: '🏙️ 13:30 黃刀鎮市區觀光 (約 2.5 小時)\n🍽️ 網紅魚餐廳 Bullocks Bistro or 原住民酒吧（自費晚餐option）\n🌌 22:00 追獵極光', stay: 'Chateau Nova' },
-  { key: '12-02', date: '12/02', day: '二', activity: '🐟 10:30 冰凍大奴湖捕魚體驗+午餐\n🐕 13:00 狗拉雪橇\n🌌 22:00 極光圈區追獵極光', stay: 'Chateau Nova' },
-  { key: '12-03', date: '12/03', day: '三', activity: '🛬 搭機返回紐約 (YZF→EWR)', stay: '大姐家' },
-  { key: '12-04', date: '12/04', day: '四', activity: '🏙️ 市區觀光', stay: '大姐家' },
-  { key: '12-05', date: '12/05', day: '五', activity: '🏙️ 市區觀光\n🎒 準備行李', stay: '大姐家' },
-  { key: '12-06', date: '12/06', day: '六', activity: '🏰 Oheka Castle\n🇹🇼 紅眼班機返台', stay: '紐約/台灣', stayIcon: '📍' },
-  { key: '12-08', date: '12/08', day: '一', activity: '', stay: '台灣', stayIcon: '📍' },
+  { key: '11-25', date: '11/25', day: '三', activity: '', stay: '台灣', stayIcon: '📍' },
+  { key: '11-26', date: '11/26', day: '四', activity: '🛬 抵達紐約 (TPE→JFK)', stay: '大姐家' },
+  { key: '11-27', date: '11/27', day: '五', activity: '🚆 長島鐵路往返（Huntington 站）<a href="https://www.mta.info/agency/long-island-rail-road" target="_blank" rel="noopener">LIRR 時刻表</a>（單程約 1–1.5 小時）\n🏙️ 市區觀光\n🌀 Vessel（哈德遜廣場）：Penn Station 步行約 15–20 分\n🌇 Summit One Vanderbilt（黃昏場）：7 號線約 10 分\n🚆 Grand Central 搭長島鐵路回家', stay: '大姐家' },
+  { key: '11-28', date: '11/28', day: '六', activity: '🏔️ 卡加利 (EWR→YYC)', stay: 'Delta Hotels' },
+  { key: '11-29', date: '11/29', day: '日', activity: '🚌 <a href="https://www.getyourguide.com/banff-l284/lake-louise-emerald-moraine-canyon-hike-bridge-yoho-to-t1074469/" target="_blank" rel="noopener">Lake Louise, Emerald, Moraine, Canyon hike, Bridge & Yoho tour</a>\n⏰ 08:00-19:00\n\n行程內容：\n・Cascade Mountain（途經）\n・Castle Mountain（拍照停留）\n・Lake Louise（導覽行程）\n・Emerald Lake\n・Natural bridge\n・Marble canyon\n・Banff town\n\n🍴 午餐：Lake Louise Village North', stay: 'Delta Hotels' },
+  { key: '11-30', date: '11/30', day: '一', activity: '🛬 抵達黃刀鎮 (YYC→YZF)\n🌌 22:00 <a href="https://sites.google.com/view/dragonpalacetravel/%E8%A1%8C%E7%A8%8B%E8%88%87%E6%B4%BB%E5%8B%95tour-package-activities/%E5%86%AC%E9%BE%8D%E5%BD%A9%E9%BB%83%E5%88%80%E6%A5%B5%E5%85%894%E6%97%A5?pli=1&amp;authuser=0" target="_blank" rel="noopener">極光之旅-湖畔木屋營地</a>', stay: 'Chateau Nova' },
+  { key: '12-01', date: '12/01', day: '二', activity: '🏙️ 13:30 黃刀鎮市區觀光 (約 2.5 小時)\n🍽️ 網紅魚餐廳 Bullocks Bistro or 原住民酒吧（自費晚餐option）\n🌌 22:00 追獵極光', stay: 'Chateau Nova' },
+  { key: '12-02', date: '12/02', day: '三', activity: '🐟 10:30 冰凍大奴湖捕魚體驗+午餐\n🐕 13:00 狗拉雪橇\n🌌 22:00 極光圈區追獵極光', stay: 'Chateau Nova' },
+  { key: '12-03', date: '12/03', day: '四', activity: '🛬 搭機返回紐約 (YZF→EWR)', stay: '大姐家' },
+  { key: '12-04', date: '12/04', day: '五', activity: '🚆 長島鐵路往返（Huntington 站）<a href="https://www.mta.info/agency/long-island-rail-road" target="_blank" rel="noopener">LIRR 時刻表</a>（單程約 1–1.5 小時）\n🕊️ 911 紀念博物館：Penn 搭 1 號線約 20–25 分\n💰 華爾街（衝鋒牛、紐約證交所）：步行約 10–15 分\n⛴️ 自由女神像遊船（不登島）：步行約 15 分，碼頭以票券為準\n🏙️ 市區觀光', stay: '大姐家' },
+  { key: '12-05', date: '12/05', day: '六', activity: '🚆 長島鐵路往返（Huntington 站）<a href="https://www.mta.info/agency/long-island-rail-road" target="_blank" rel="noopener">LIRR 時刻表</a>（單程約 1–1.5 小時）\n🏙️ 市區觀光 / 🛍️ 購物\n🌃 時代廣場：Penn 搭 1/2/3 號線約 5–10 分\n🌉 布魯克林大橋：散場後地鐵約 30–35 分，走橋約 25–30 分\n🍽️ 18:30 <a href="https://www.tripadvisor.com.tw/Restaurant_Review-g60827-d12585219-Reviews-Cecconi_s-Brooklyn_New_York.html" target="_blank" rel="noopener">Cecconi\'s DUMBO</a>（已訂位 5 位）\n🍽️ 19:00 <a href="https://westville.com/locations/westville-dumbo/" target="_blank" rel="noopener">Westville DUMBO</a>（已訂位 5 位，兩家擇一）\n🚆 回程：DUMBO 到 Atlantic Terminal 搭長島鐵路\n🎒 準備行李', stay: '大姐家' },
+  { key: '12-06', date: '12/06', day: '日', activity: '🏰 Oheka Castle\n🏛️ Vanderbilt 博物館（備選）\n🚗 約 18:30 出發去機場\n🇹🇼 紅眼班機返台', stay: '紐約/台灣', stayIcon: '📍' },
+  { key: '12-08', date: '12/08', day: '二', activity: '', stay: '台灣', stayIcon: '📍' },
 ];
 
 // ===== 迷你月曆：城市分段上色 + 自訂標籤 =====
@@ -387,9 +409,9 @@ const dayMeta = {
 
 // 3 週（7 欄）排版，含行程前後的留白日期；12/07 為換日線，無獨立行程卡
 const calWeeks = [
-  [{d:'11/23'},{d:'11/24'},{d:'11/25'},{d:'11/26'},{d:'11/27'},{d:'11/28'},{d:'11/29'}],
-  [{d:'11/30'},{d:'12/01'},{d:'12/02'},{d:'12/03'},{d:'12/04'},{d:'12/05'},{d:'12/06'}],
-  [{d:'12/07', transit:true},{d:'12/08'},null,null,null,null,null],
+  [{d:'11/22'},{d:'11/23'},{d:'11/24'},{d:'11/25'},{d:'11/26'},{d:'11/27'},{d:'11/28'}],
+  [{d:'11/29'},{d:'11/30'},{d:'12/01'},{d:'12/02'},{d:'12/03'},{d:'12/04'},{d:'12/05'}],
+  [{d:'12/06'},{d:'12/07', transit:true},{d:'12/08'},null,null,null,null],
 ];
 
 function renderCalendar() {
@@ -571,6 +593,70 @@ function showToast(msg, isError) {
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2600);
 }
+
+// ===== 紐約小地圖（Leaflet + OpenStreetMap）=====
+(function () {
+  const days = {
+    '11/27': { color: '#7fc3a3', label: '11/27' },
+    '12/04': { color: '#e3b24f', label: '12/04' },
+    '12/05': { color: '#e8a3b4', label: '12/05' },
+  };
+  const spots = [
+    { day: '11/27', n: 1, name: 'Vessel（哈德遜廣場）', note: '需先預約時段，12 月票 11 月底開放', ll: [40.7538, -74.0020] },
+    { day: '11/27', n: 2, name: 'Summit One Vanderbilt', note: '黃昏場，日落前 30–45 分鐘進場', ll: [40.7527, -73.9772] },
+    { day: '12/04', n: 1, name: '自由女神像遊船（不登島）', note: '登船碼頭以票券為準', ll: [40.7033, -74.0170] },
+    { day: '12/04', n: 2, name: '華爾街（衝鋒牛、證交所）', note: '', ll: [40.7062, -74.0123] },
+    { day: '12/04', n: 3, name: '911 紀念博物館', note: '', ll: [40.7115, -74.0134] },
+    { day: '12/05', n: 1, name: '時代廣場', note: '看戲前先逛、吃午餐', ll: [40.7580, -73.9855] },
+    { day: '12/05', n: 2, name: '新阿姆斯特丹劇院（阿拉丁 14:00）', note: '建議 13:30 前入場', ll: [40.7562, -73.9877] },
+    { day: '12/05', n: 3, name: '布魯克林大橋', note: '', ll: [40.7061, -73.9969] },
+    { day: '12/05', n: 4, name: 'DUMBO 晚餐：Cecconi\'s / Westville', note: '', ll: [40.7032, -73.9892] },
+  ];
+  const chipsEl = document.getElementById('mapChips');
+  const listEl = document.getElementById('mapList');
+  const mapEl = document.getElementById('nyMap');
+  if (typeof L === 'undefined') {
+    mapEl.style.display = 'none';
+    listEl.innerHTML = '地圖載入失敗，請確認網路連線。';
+    return;
+  }
+  const map = L.map('nyMap', { scrollWheelZoom: false }).setView([40.73, -73.99], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© OpenStreetMap'
+  }).addTo(map);
+  const layer = L.layerGroup().addTo(map);
+  let current = 'all';
+
+  function render() {
+    layer.clearLayers();
+    const shown = spots.filter(s => current === 'all' || s.day === current);
+    shown.forEach(s => {
+      const icon = L.divIcon({
+        className: '',
+        html: '<div class="pin" style="background:' + days[s.day].color + '">' + s.n + '</div>',
+        iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -12]
+      });
+      const url = 'https://www.google.com/maps/search/?api=1&query=' + s.ll[0] + ',' + s.ll[1];
+      const pop = '<b>' + s.day + '・' + s.name + '</b>' + (s.note ? '<br>' + s.note : '') +
+        '<br><a href="' + url + '" target="_blank" rel="noopener">在 Google 地圖開啟</a>';
+      L.marker(s.ll, { icon: icon }).bindPopup(pop).addTo(layer);
+    });
+    map.fitBounds(L.latLngBounds(shown.map(s => s.ll)), { padding: [30, 30], maxZoom: 15 });
+    listEl.innerHTML = Object.keys(days)
+      .filter(d => current === 'all' || d === current)
+      .map(d => '<div><b>' + d + '</b>　' + spots.filter(s => s.day === d).map(s => s.n + '. ' + s.name).join('　→　') + '</div>')
+      .join('');
+    chipsEl.querySelectorAll('.map-chip').forEach(b => b.classList.toggle('on', b.dataset.k === current));
+  }
+
+  [['all', '全部']].concat(Object.keys(days).map(d => [d, d])).forEach(([k, t]) => {
+    const b = document.createElement('button');
+    b.className = 'map-chip'; b.dataset.k = k; b.textContent = t;
+    b.onclick = () => { current = k; render(); };
+    chipsEl.appendChild(b);
+  });
+  render();
+})();
 </script>
 </body>
 </html>
