@@ -139,16 +139,16 @@
   .cal-cell .tag { font-size: clamp(8px, 2.1vw, 13px); font-weight: 700; color: var(--ink); opacity: .85; white-space: normal; line-height: 1.15; padding: 0 2px; word-break: break-word; }
 
   .cal-legend {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    padding-top: 12px; border-top: 2px dashed var(--panel-line);
+    display: flex; flex-wrap: wrap; gap: 4px 5px;
+    padding-top: 8px; border-top: 2px dashed var(--panel-line);
   }
   .cal-legend .item {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 14px; color: var(--ink-soft); font-weight: 600;
+    display: flex; align-items: center; gap: 3px;
+    font-size: clamp(9px, 2.6vw, 11px); color: var(--ink-soft); font-weight: 600;
     background: rgba(107,84,64,.04);
-    border-radius: 999px; padding: 5px 13px 5px 7px;
+    border-radius: 999px; padding: 2px 7px 2px 4px; white-space: nowrap;
   }
-  .cal-legend .swatch { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--ink); flex: none; }
+  .cal-legend .swatch { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--ink); flex: none; }
 
   /* ===== 日期切換 ===== */
   .day-nav {
