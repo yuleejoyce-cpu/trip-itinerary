@@ -478,7 +478,8 @@ let selectedIndex = 0;
 function renderDetail() {
   const item = itinerary[selectedIndex];
   const meta = dayMeta[item.date] || {};
-  const notes = allNotes.filter(n => n.date === item.date);
+  const normD = d => String(d).split('/').map(x => String(parseInt(x, 10))).join('/');
+  const notes = allNotes.filter(n => normD(n.date) === normD(item.date));
 
   document.getElementById('dayNavLabel').textContent = `${item.date}（週${item.day}）`;
   document.getElementById('prevBtn').disabled = selectedIndex === 0;
