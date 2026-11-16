@@ -377,8 +377,8 @@ const itinerary = [
   { key: '12-01', date: '12/01', day: '二', activity: '🏙️ 13:30 黃刀鎮市區觀光 (約 2.5 小時)\n🍽️ 網紅魚餐廳 Bullocks Bistro or 原住民酒吧（自費晚餐option）\n🌌 22:00 追獵極光', stay: 'Chateau Nova' },
   { key: '12-02', date: '12/02', day: '三', activity: '🐟 10:30 冰凍大奴湖捕魚體驗+午餐\n🐕 13:00 狗拉雪橇\n🌌 22:00 極光圈區追獵極光', stay: 'Chateau Nova' },
   { key: '12-03', date: '12/03', day: '四', activity: '🛬 搭機返回紐約 (YZF→EWR)', stay: '大姐家' },
-  { key: '12-04', date: '12/04', day: '五', activity: '⛴️ 11:30 自由女神像遊船（不登島）\n💰 華爾街（衝鋒牛、紐約證交所）\n🕊️ 15:00 911 紀念博物館\n🏙️ 市區觀光\n🎄 洛克菲勒中心聖誕樹（晚上）', stay: '大姐家' },
-  { key: '12-05', date: '12/05', day: '六', activity: '🏙️ 市區觀光 / 🛍️ 購物\n🌃 時代廣場\n🌉 布魯克林大橋\n🍽️ 18:30 <a href="https://www.tripadvisor.com.tw/Restaurant_Review-g60827-d12585219-Reviews-Cecconi_s-Brooklyn_New_York.html" target="_blank" rel="noopener">Cecconi\'s DUMBO</a>（已訂位 5 位）\n🍽️ 19:00 <a href="https://westville.com/locations/westville-dumbo/" target="_blank" rel="noopener">Westville DUMBO</a>（已訂位 5 位，兩家擇一）\n🎒 準備行李', stay: '大姐家' },
+  { key: '12-04', date: '12/04', day: '五', activity: '⛴️ 11:30 自由女神像遊船（不登島）\n💰 華爾街（衝鋒牛、紐約證交所）\n🕊️ 15:00 911 紀念博物館\n🏙️ 市區觀光\n🌉 布魯克林大橋\n🍽️ 18:00 <a href="https://www.tripadvisor.com.tw/Restaurant_Review-g60827-d12585219-Reviews-Cecconi_s-Brooklyn_New_York.html" target="_blank" rel="noopener">Cecconi\'s DUMBO</a>（已訂位 5 位）\n🍽️ 18:30 <a href="https://westville.com/locations/westville-dumbo/" target="_blank" rel="noopener">Westville DUMBO</a>（已訂位 5 位，兩家擇一）', stay: '大姐家' },
+  { key: '12-05', date: '12/05', day: '六', activity: '🏙️ 市區觀光 / 🛍️ 購物\n🌃 時代廣場\n🎄 洛克菲勒中心聖誕樹（晚上）\n🎒 準備行李', stay: '大姐家' },
   { key: '12-06', date: '12/06', day: '日', activity: '🏰 Oheka Castle\n🏛️ Vanderbilt 博物館（備選）\n🚗 約 18:30 出發去機場\n🇹🇼 紅眼班機返台', stay: '紐約/台灣', stayIcon: '📍' },
   { key: '12-08', date: '12/08', day: '二', activity: '', stay: '台灣', stayIcon: '📍' },
 ];
@@ -609,10 +609,11 @@ function showToast(msg, isError) {
     { day: '12/04', n: 1, name: '自由女神像遊船（不登島）', note: '登船碼頭以票券為準', ll: [40.7033, -74.0170] },
     { day: '12/04', n: 2, name: '華爾街（衝鋒牛、證交所）', note: '', ll: [40.7062, -74.0123] },
     { day: '12/04', n: 3, name: '911 紀念博物館', note: '', ll: [40.7115, -74.0134] },
+    { day: '12/04', n: 4, name: '布魯克林大橋', note: '', ll: [40.7061, -73.9969] },
+    { day: '12/04', n: 5, name: 'DUMBO 晚餐：Cecconi\'s / Westville', note: '18:00 / 18:30 擇一', ll: [40.7032, -73.9892] },
     { day: '12/05', n: 1, name: '時代廣場', note: '看戲前先逛、吃午餐', ll: [40.7580, -73.9855] },
     { day: '12/05', n: 2, name: '新阿姆斯特丹劇院（阿拉丁 14:00）', note: '建議 13:30 前入場', ll: [40.7562, -73.9877] },
-    { day: '12/05', n: 3, name: '布魯克林大橋', note: '', ll: [40.7061, -73.9969] },
-    { day: '12/05', n: 4, name: 'DUMBO 晚餐：Cecconi\'s / Westville', note: '', ll: [40.7032, -73.9892] },
+    { day: '12/05', n: 3, name: '洛克菲勒中心聖誕樹（晚上）', note: '', ll: [40.7587, -73.9787] },
   ];
   const chipsEl = document.getElementById('mapChips');
   const listEl = document.getElementById('mapList');
