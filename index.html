@@ -402,8 +402,8 @@ const dayMeta = {
   '12/01': { seg: 'yzf',    icon: '⛄', tag: '黃刀鎮' },
   '12/02': { seg: 'yzf',    icon: '🎣', tag: '黃刀鎮' },
   '12/03': { seg: 'ny',     icon: '✈️', tag: '紐約' },
-  '12/04': { seg: 'ny',     icon: '🏢', tag: '紐約' },
-  '12/05': { seg: 'ny',     icon: '🌉', tag: '紐約' },
+  '12/04': { seg: 'ny',     icon: '🌉', tag: '紐約' },
+  '12/05': { seg: 'ny',     icon: '🎭', tag: '紐約' },
   '12/06': { seg: 'home',   icon: '✈️', tag: '紐約/回家' },
   '12/08': { seg: 'home',   icon: '✈️', tag: '台灣' },
 };
@@ -507,7 +507,7 @@ function renderDetail() {
           ? `<div class="note-sheet">
               ${notes.map(n => `
                 <div class="note-line" style="--who-color:${getUserColor(n.user)}">
-                  ${n.user ? `<span class="note-who">${n.user}</span>` : ''}${n.message}
+                  ${n.user ? `<span class="note-who">${n.user}</span>` : ''}${linkify(n.message)}
                 </div>`).join('')}
             </div>`
           : `<div class="note-empty">還沒有備註/說明，第一個留言給大家看看吧 👋</div>`
@@ -522,6 +522,13 @@ function renderDetail() {
       </div>
     </div>`;
   document.getElementById('dayDetail').innerHTML = html;
+}
+
+function linkify(msg) {
+  const s = String(msg == null ? '' : msg);
+  if (/<a\s/i.test(s)) return s;
+  return s.replace(/https?:\/\/[^\s<>"']+/g, u =>
+    `<a href="${u}" target="_blank" rel="noopener" style="white-space:nowrap">🔗連結</a>`);
 }
 
 function escapeHtml(str) {
