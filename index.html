@@ -321,6 +321,24 @@
   .map-list { margin-top: 8px; font-size: 13px; line-height: 1.7; color: var(--ink); }
   .map-list b { color: var(--accent-dark); }
   .map-note { margin-top: 6px; font-size: 11.5px; color: var(--ink-soft); }
+  /* ===== 分頁＋吃與買 ===== */
+  .page-tabs { display: flex; gap: 8px; margin: 4px 0 12px; }
+  .page-tab { flex: 1; border: 2.5px solid var(--panel-line); background: #fff; color: var(--ink); font-family: inherit; font-weight: 800; font-size: 15px; padding: 9px 8px; border-radius: 14px; cursor: pointer; box-shadow: 2px 2px 0 rgba(107,84,64,.10); }
+  .page-tab.on { background: var(--accent); border-color: var(--accent-dark); color: #fff; }
+  .food-sec { margin-top: 10px; }
+  .food-sec h3 { font-size: 15px; font-weight: 900; color: var(--accent-dark); margin: 12px 0 6px; }
+  .food-lead { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 6px; }
+  .food-item { display: flex; gap: 10px; padding: 9px 4px; border-bottom: 1.5px dashed var(--panel-line); }
+  .food-item:last-child { border-bottom: 0; }
+  .rank { flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--butter); border: 2px solid var(--butter-dark); color: var(--ink); font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .food-body { font-size: 13.5px; line-height: 1.6; color: var(--ink); min-width: 0; }
+  .food-body .nm { font-weight: 900; }
+  .food-body .meta { color: var(--ink-soft); font-size: 12px; margin-left: 4px; }
+  .food-body .tip { color: var(--ink-soft); font-size: 12px; }
+  .buy-item { padding: 8px 4px; border-bottom: 1.5px dashed var(--panel-line); font-size: 13.5px; line-height: 1.6; }
+  .buy-item:last-child { border-bottom: 0; }
+  .buy-item .nm { font-weight: 900; }
+  .buy-item .tip { color: var(--ink-soft); font-size: 12px; display: block; }
   .pin { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); font-family: 'Baloo 2', sans-serif; }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -335,6 +353,12 @@
     <p>2026年11月26日 ~ 12月8日</p>
   </div>
 
+  <div class="page-tabs">
+    <button class="page-tab on" id="tabItin" onclick="showPage('itin')">📅 行程</button>
+    <button class="page-tab" id="tabFood" onclick="showPage('food')">🍽️ 吃與買</button>
+  </div>
+
+  <div id="pageItin">
   <div class="updated-bar"><span class="dot"></span><span id="lastUpdatedText">行程最後更新：2026/10/12</span></div>
 
   <div class="cal-card">
@@ -361,11 +385,21 @@
     <div class="map-list" id="mapList"></div>
     <div class="map-note">點標記可開 Google 地圖導航；座標為概略位置，自由女神遊船碼頭以票券為準。</div>
   </div>
+  </div>
+
+  <div id="pageFood" style="display:none">
+    <div class="map-card" style="margin-top:0">
+      <h2>🍽️ 吃與買</h2>
+      <div class="food-lead">餐廳依推薦順序排列；評分與價位來自 Google 地圖，營業時間出發前請再確認。</div>
+      <div class="map-chips" id="foodChips"></div>
+      <div id="foodBody"></div>
+    </div>
+  </div>
 </div>
 
 <script>
 // ===== 行程資料：每次改行程記得更新下面的 LAST_UPDATED =====
-const LAST_UPDATED = '2026/11/13';
+const LAST_UPDATED = '2026/11/22';
 
 const itinerary = [
   { key: '11-25', date: '11/25', day: '三', activity: '', stay: '台灣', stayIcon: '📍' },
@@ -667,6 +701,95 @@ function showToast(msg, isError) {
   });
   render();
 })();
+</script>
+<script>
+// ===== 吃與買 分頁（公開網站，不放私人地址）=====
+const FOOD = [
+  { id: 'ny', label: '紐約', when: '11/27、12/04、12/05',
+    eat: [
+      { n: 'Grand Central Oyster Bar', m: '$$', d: '經典海鮮老店，生蠔種類多', t: '11/27 去 Summit 前後，或回長島搭車前' },
+      { n: "Tony's Di Napoli（147 W 43rd St）", m: '$$$', d: '義式家庭分食，雞肉帕馬森、蘑菇義大利麵', t: '12/05 阿拉丁前後，適合多人分食' },
+      { n: 'Joe Allen（326 W 46th St）', m: '$$', d: '美式小酒館，肉餅、素漢堡', t: '12/05 看戲前後，適合一兩個人' },
+      { n: 'Los Tacos No. 1', m: '$', d: '烤牛肉、阿多巴豬肉、雞肉塔可', t: '趕行程時快速吃' }
+    ],
+    buy: [
+      { n: 'Chelsea Market、Essex Market', d: '小農茶、咖啡豆、果醬、醬料' },
+      { n: 'Everything bagel 調味粉', d: '很輕、好送人' }
+    ] },
+  { id: 'banff', label: '班夫', when: '11/29 一日團鎮上停留',
+    eat: [
+      { n: 'The Boss Kitchen & Bar', m: '4.7★ · $20–70', d: '野牛漢堡（配薩斯卡通莓果醬）、慢燉野牛小排、鴨翅', t: '週一至週四 12:00 開' },
+      { n: 'The Bison Restaurant & Terrace', m: '4.6★ · $100+', d: '燉野牛小排配班諾克麵包、野牛三重奏', t: '11/28 公休' },
+      { n: 'Three Bears Brewery & Restaurant', m: '4.6★ · $20–60', d: '精釀啤酒和披薩', t: '' },
+      { n: 'The Grizzly House', m: '4.3★ · $40–90', d: '木屋火鍋，異國野味火鍋、起司鍋', t: '只接受電話訂位，週二 16:00 才開' }
+    ],
+    buy: [
+      { n: 'Roots Banff（227 Banff Ave）', d: 'BANFF 限定字樣的海狸 Logo 帽 T、大學 T', t: '每日 10:00–22:00' },
+      { n: 'Rocky Mountain Soap Company（204 Banff Ave）', d: '手工皂、檸檬草護唇膏、泡澡錠', t: '每日 10:00–21:00' },
+      { n: 'IGA Banff（318 Marten St）', d: '楓葉夾心餅乾、楓糖漿、BROOKSIDE 巧克力', t: '每日 07:00–22:00' }
+    ] },
+  { id: 'yyc', label: '卡加利', when: '11/28、11/29 晚上',
+    eat: [
+      { n: 'CHARCUT Roast House', m: '', d: '自製火腿冷肉、鴨油薯條', t: '' },
+      { n: 'Sky 360（Calgary Tower）', m: '', d: '旋轉餐廳，野牛和阿爾伯達牛，可看市景', t: '' },
+      { n: "Caesar's Steakhouse", m: '', d: '1972 年老牌牛排館，桌邊凱薩沙拉', t: '' },
+      { n: 'OEB Breakfast Co.', m: '', d: '主廚早餐，多家分店', t: '' }
+    ],
+    buy: [
+      { n: '咖啡豆', d: 'Analog、Monogram、Phil & Sebastian' },
+      { n: '巧克力、馬卡龍', d: 'Chocolate Lab、cochu、Ollia' },
+      { n: '香料', d: 'The Silk Road Spice Merchant' },
+      { n: '其他', d: 'Calgary Stampede Store、Milk Jar 蠟燭' }
+    ] },
+  { id: 'yzf', label: '黃刀鎮', when: '11/30～12/03',
+    eat: [
+      { n: "Bullock's Bistro", m: '4.5★ · $30–60', d: '大奴湖現撈魚：煎或炸白魚、北極紅點鮭、巧達濃湯', t: '11/30 17:30 已訂；週日公休' },
+      { n: 'NWT Brewing / The Woodyard', m: '4.6★ · $30–40', d: '啤酒麵衣炸白魚薯條、手撕煙燻牛胸肉捲餅', t: '週一、週日公休；週二、三 16:00 開' },
+      { n: 'The Happy Tummy Bar & Grill', m: '4.8★ · $20–30', d: '當地野牛漢堡、辣椒起司堡、起司肉汁薯條', t: '週一至週五 11:30 開' },
+      { n: "Coyote's Family Steakhouse", m: '', d: '野牛肋眼、北方淡水魚，建議三分熟', t: '' }
+    ],
+    buy: [
+      { n: 'Northern Souvenirs & Gifts（4905 48 St）', d: '北極熊車牌周邊、極光服飾、明信片', t: '週一至週六 10:00–18:00；週日 12:00–17:00' },
+      { n: 'Your Independent Grocer（4802 Franklin Ave #14）', d: '零食、補給品、部分加拿大伴手禮', t: '每日 08:00–21:00' },
+      { n: 'Gallery of the Midnight Sun（5005 Bryson Dr）', d: '原住民皂石雕刻、北方工藝品', t: '週一、二、四、五 11:00–17:00；週三 12:00–16:00' },
+      { n: '遊客中心', d: '可免費拿北緯 60 度證書和紀念徽章' },
+      { n: '明信片北極熊郵戳', d: '郵局櫃台可蓋，寄回台灣約 CA$3.65/張（參考價，以櫃台為準）；貼好郵票請人工蓋章' }
+    ] }
+];
+
+function renderFood(id) {
+  const place = FOOD.find(p => p.id === id) || FOOD[0];
+  document.querySelectorAll('#foodChips .map-chip').forEach(b => b.classList.toggle('on', b.dataset.id === place.id));
+  const eat = place.eat.map((e, i) => `
+    <div class="food-item"><div class="rank">${i + 1}</div><div class="food-body">
+      <span class="nm">${e.n}</span>${e.m ? `<span class="meta">${e.m}</span>` : ''}<br>${e.d}${e.t ? `<br><span class="tip">${e.t}</span>` : ''}
+    </div></div>`).join('');
+  const buy = place.buy.map(b => `
+    <div class="buy-item"><span class="nm">${b.n}</span>：${b.d}${b.t ? `<span class="tip">${b.t}</span>` : ''}</div>`).join('');
+  document.getElementById('foodBody').innerHTML = `
+    <div class="food-sec"><div class="food-lead">${place.when}</div>
+    <h3>🍽️ 吃（依推薦順序）</h3>${eat}
+    <h3>🛍️ 買</h3>${buy}</div>`;
+}
+(function initFood() {
+  const chips = document.getElementById('foodChips');
+  FOOD.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'map-chip'; b.dataset.id = p.id; b.textContent = p.label;
+    b.onclick = () => renderFood(p.id);
+    chips.appendChild(b);
+  });
+  renderFood(FOOD[0].id);
+})();
+function showPage(which) {
+  const food = which === 'food';
+  document.getElementById('pageItin').style.display = food ? 'none' : '';
+  document.getElementById('pageFood').style.display = food ? '' : 'none';
+  document.getElementById('tabItin').classList.toggle('on', !food);
+  document.getElementById('tabFood').classList.toggle('on', food);
+  try { window.scrollTo(0, 0); } catch (e) {}
+  if (!food) setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+}
 </script>
 </body>
 </html>
